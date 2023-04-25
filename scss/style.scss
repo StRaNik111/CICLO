@@ -1,0 +1,1169 @@
+@use "sass:math";
+
+// Підключення міксинів ===========================================================================================================================================================================================================================================================================
+@import "base/mixins";
+
+// Підключення шрифтів ===========================================================================================================================================================================================================================================================================
+//&display=swap - додати при підключенні через плагін
+
+// Підключити, якщо є локальні файли шрифтів
+//@import "fonts/fonts";
+
+// Підключення іконкових шрифтів ==============================================================================================================================================================================================================================================================================
+// Підключити, якщо є файл іконкового шрифту
+//@import "fonts/icons";
+@import url('https://fonts.googleapis.com/css?family=Quicksand:300,regular,700&display=swap');
+// ============================================================================================================================================================================================================================================================================================================================================================================================
+// Налаштування шаблону ============================================================================================================================================================================================================================================================================================================================================================================================
+// ============================================================================================================================================================================================================================================================================================================================================================================================
+
+// За замовчуванням шрифт ==============================================================================================================================================================================================================================================================================
+$fontFamily: "Quicksand";
+$fontSize: rem(25); // де 14(px) - розмір шрифту за замовчуванням з макету
+
+// Основні кольори
+$mainColor: #6A6E77; // Колір шрифту за замовчуванням
+$darkColor: #1C1F25; // Колір шрифту за замовчуванням
+
+// Налаштування адаптивної сітки ===============================================================================================================================================================================================================================================================================================
+
+// Мінімальна ширина сторінки
+$minWidth: 320;
+// Ширина полотна (макету)
+$maxWidth: 1920;
+// Ширина обмежуючого контейнера (0 = немає обмеження)
+$maxWidthContainer: 0;
+// Загальний відступ у контейнера
+// (30 = по 15px ліворуч і праворуч, 0 = немає відступу)
+$containerPadding: 480;
+
+// Ширина спрацьовування першого брейкпоінту
+$containerWidth: $maxWidthContainer + $containerPadding;
+
+// Брейк-поїнти
+$pc: em($containerWidth); // ПК, ноутбуки, деякі планшети у горизонтальному положенні
+$tablet: em(991.98); // Планшети, деякі телефони в горизонтальному положенні
+$mobile: em(767.98); // Телефони L
+$mobileSmall: em(479.98); // Телефони S
+
+// Тип адаптива:
+// 1 = чуйність (у контейнера немає брейкпоінтів),
+// 2 = по брейк-поїнт (контейнер змінює свою ширину по брейк-поїнт)
+$responsiveType: 1;
+
+// ============================================================================================================================================================================================================================================================================================================================================================================================
+// ============================================================================================================================================================================================================================================================================================================================================================================================
+
+// Обнулення ============================================================================================================================================================================================== =============================================================================================== ===============================================================================================
+@import "base/null";
+
+// Стилі тега BODY ============================================================================================================================================================================================================================================================================================================================================================================================
+
+body {
+	opacity: 0;
+
+	// Скролл заблоковано
+	.lock & {
+		overflow: hidden;
+		touch-action: none;
+		overscroll-behavior: none;
+	}
+
+	// Сайт завантажений
+	.loaded & {
+		opacity: 1;
+		transition: all 1s ease 0.5s;
+	}
+
+	@include adaptiveValue("font-size", 25, 18);
+}
+
+// Оболонка wrapper ============================================================================================================================================================================================================================================================================================================================================================================================================================================
+.wrapper {
+	min-height: 100%;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+
+	@supports (overflow: clip) {
+		overflow: clip;
+	}
+
+	// Притискаємо footer
+	>main {
+		flex: 1 1 auto;
+	}
+
+	// Фікс для слайдерів
+	>* {
+		min-width: 0;
+	}
+}
+
+// Обмежуючий контейнер ======================================================================================================================================================================================================================
+
+/*
+(i) Стилі будуть застосовуватись до
+всіх класів, що містять *__container
+Наприклад header__container, main__container і т.п.
+Сніппет (HTML): cnt
+*/
+@if ($responsiveType==1) {
+
+	// Чуйна
+	[class*="__container"] {
+		@if ($maxWidthContainer>0) {
+			max-width: rem($containerWidth);
+			margin: 0 auto;
+		}
+
+		@if ($containerPadding>0) {
+			@if ($maxWidthContainer>0) {
+				padding: 0 rem(math.div($containerPadding, 2));
+			}
+
+			@else {
+				@include adaptiveValue("padding-left", math.div($containerPadding, 2), 15);
+				@include adaptiveValue("padding-right", math.div($containerPadding, 2), 15);
+			}
+		}
+	}
+}
+
+@else {
+
+	// Брейк-поїнтами
+	[class*="__container"] {
+		margin: 0 auto;
+
+		@if ($maxWidthContainer>0) {
+			max-width: rem($containerWidth);
+		}
+
+		@else {
+			@if ($containerPadding>0) {
+				padding: 0 rem(math.div($containerPadding, 2));
+			}
+		}
+
+		@media (max-width: $pc) {
+			max-width: rem(970);
+		}
+
+		@media (max-width: $tablet) {
+			max-width: rem(750);
+		}
+
+		@media (max-width: $mobile) {
+			max-width: none;
+
+			@if ($containerPadding>0 and $maxWidthContainer>0) {
+				padding: 0 rem(math.div($containerPadding, 2));
+			}
+		}
+	}
+}
+
+// Підключення базових стилів, шаблонів (заготівель) та допоміжних класів
+// Для підключення/вимкнення конкретних стилів дивись base.scss
+@import "base";
+
+// Підключення стилів загальних елементів проекту
+@import "common";
+
+// Підключення стилів окремих блоків
+@import "header";
+@import "footer";
+
+// Підключення стилів окремих сторінок
+@import "home";
+
+.page {
+	counter-reset: item;
+
+	&__section {
+		&::before {
+			counter-increment: item;
+			content: counter(item, decimal-leading-zero);
+			position: absolute;
+			top: 50%;
+			transform: translate(50%, -50%);
+			@include adaptiveValue("right", 120, 7.5);
+			color: #E3E6EC;
+			font-weight: 700;
+			@include adaptiveValue("font-size", 60, 25);
+			z-index: 10;
+
+			@media (max-width: $mobile) {
+				top: rem(20) !important;
+				right: 50% !important;
+			}
+		}
+	}
+}
+
+
+
+
+.screen-01 {
+	&__container {
+		display: flex;
+		flex-grow: 1;
+		min-height: 100%;
+		padding-top: rem(20);
+		padding-bottom: rem(20);
+
+		@media (max-width: $mobile) {
+			padding: 0 !important;
+		}
+
+		@media (min-width: $mobile) {
+			align-items: center;
+
+		}
+	}
+
+
+	&__body {
+		@include adaptiveValue("padding-top", 150, 15);
+		@include adaptiveValue("padding-bottom", 150, 15);
+		@include adaptiveValue("padding-left", 240, 15);
+		@include adaptiveValue("padding-right", 240, 15);
+		position: relative;
+		width: 100%;
+
+		&::after {
+			content: '';
+			position: absolute;
+			width: 100%;
+			height: 100%;
+			background: rgba(28, 31, 37, 0.6);
+			left: 0;
+			top: 0;
+		}
+
+		@media (max-width: $mobile) {
+			display: flex;
+			align-items: center;
+		}
+	}
+
+	&__section-header {
+		position: relative;
+		z-index: 2;
+	}
+
+	&__image {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		left: 0;
+		top: 0;
+	}
+}
+
+
+.screen-02 {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	&__container {
+		display: flex;
+		align-items: flex-start;
+		flex-grow: 1;
+
+		@media (max-width: $mobile) {
+			flex-direction: column;
+			padding-top: rem(30);
+		}
+	}
+
+	&__content {
+		flex: 0 1 50%;
+		padding-right: rem(20);
+		align-self: center;
+	}
+
+
+	&__image {
+		flex: 0 1 50%;
+
+		img {
+			height: 75%;
+			width: 100%;
+		}
+
+		@media (max-width: $mobile) {
+			margin-top: rem(20);
+		}
+	}
+}
+
+
+.screen-03 {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	@media (max-width: $mobile) {
+		display: flex;
+		flex-direction: column-reverse;
+	}
+
+	&__container {
+		display: flex;
+		align-items: flex-start;
+		flex-grow: 1;
+		width: 100%;
+	}
+
+	&__content {
+		flex: 0 1 100%;
+		display: flex;
+		flex-direction: column;
+
+
+		@media (max-width: $mobile) {
+			padding-top: rem(15);
+			padding-bottom: rem(30);
+			height: 100%;
+			justify-content: flex-end;
+			flex: 0 1 55%;
+
+		}
+	}
+
+
+	&__image {
+		flex: 0 1 70%;
+		height: 100%;
+		display: flex;
+
+		img {
+			width: 100%;
+			height: auto;
+		}
+
+		@media (max-width:991.98px) {
+			flex: 0 1 100%;
+
+		}
+
+		@media (max-width: $mobile) {
+			height: 40%;
+		}
+	}
+
+}
+
+.values-screen {
+	display: flex;
+	flex-direction: column;
+	margin-top: rem(120);
+	@include adaptiveValue("margin-top", 120, 60);
+
+	&__item {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+
+		&:not(:last-child) {
+			@include adaptiveValue("margin-bottom", 70, 20);
+		}
+
+		.active-section & {
+
+			&:first-child {
+				.values-screen__line {
+					span {
+						width: 95%;
+					}
+				}
+			}
+
+			&:last-child {
+				.values-screen__line {
+					span {
+						width: 65%;
+					}
+
+				}
+			}
+		}
+	}
+
+	&__label {
+		color: #6A6E77;
+		@include adaptiveValue("font-size", 25, 16);
+		line-height: math.div(31, 25);
+	}
+
+	&__value {
+		color: $darkColor;
+		font-weight: 700;
+	}
+
+	&__line {
+		flex: 0 1 100%;
+		background: rgba(28, 31, 37, 0.1);
+		margin-top: rem(5);
+
+
+		span {
+			display: block;
+			background: #1C1F25;
+			height: 10px;
+			// transition: all 1.5s;
+			width: 0;
+			transition: all 1.5s ease-in-out 0.5s;
+		}
+	}
+
+	@media (max-width: $mobile) {
+		margin-top: rem(40);
+	}
+}
+
+.screen-04 {
+	display: flex;
+
+	&__container {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding-top: rem(20);
+		padding-bottom: rem(20);
+	}
+
+	&__content {}
+
+	&__section-header {}
+
+	&__items {
+		display: flex;
+		justify-content: space-between;
+		@include adaptiveValue("margin-top", 140, 40);
+
+		@media (max-width:991.98px) {
+			flex-wrap: wrap;
+		}
+
+		@media (max-width:$mobileSmall) {
+			margin-top: 20px;
+		}
+	}
+
+	&__item {
+		flex: 0 1 435px;
+
+
+		@media (max-width:991.98px) {
+			flex: 0 1 50%;
+			@include adaptiveValue("margin-bottom", 30, 10);
+
+			&:last-child {
+				margin: 0;
+			}
+
+		}
+
+		@media (max-width:$mobileSmall) {
+			flex: 0 1 100%;
+
+		}
+	}
+}
+
+.screen-04-item {
+
+	&__img {
+		@include adaptiveValue("margin-bottom", 26, 10);
+	}
+
+	&__title {
+		@include adaptiveValue("font-size", 30, 20);
+		@include adaptiveValue("margin-bottom", 32, 16);
+
+		line-height: math.div(38, 30);
+		font-weight: 700;
+		color: $darkColor;
+	}
+
+	&__subtitle {
+		line-height: math.div(45, 25);
+		@include adaptiveValue("font-size", 25, 16);
+
+	}
+}
+
+
+.screen-05 {
+	display: flex;
+	justify-content: center;
+
+	&__container {
+		display: flex;
+		width: 100%;
+	}
+
+	&__content {
+		display: flex;
+		width: 100%;
+
+		@media (max-width:767.98px) {
+			flex-direction: column;
+		}
+	}
+
+	&__section-header {
+		flex: 0 1 50%;
+		flex-direction: column;
+		display: flex;
+		justify-content: center;
+		margin-right: 20px;
+
+		.section-header__title {
+			@include adaptiveValue("margin-bottom", 100, 20);
+		}
+
+		@media (max-width:767.98px) {
+			padding-top: rem(30);
+			padding-bottom: rem(30);
+		}
+	}
+
+	&__images {
+		flex: 0 1 50%;
+		display: flex;
+		flex-direction: column;
+
+		@media (max-width:767.98px) {
+			flex-direction: row;
+		}
+	}
+
+	&__img {
+		flex: 0 1 50%;
+
+		position: relative;
+
+		img {
+			max-width: 100%;
+			height: 100%;
+			object-fit: cover;
+			position: absolute;
+			width: 100%;
+			left: 0;
+			top: 0;
+		}
+
+	}
+
+}
+
+
+.screen-06 {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	&__container {
+		padding-top: rem(20);
+		padding-bottom: rem(20);
+	}
+
+	&__content {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		column-gap: 30px;
+
+		@media (max-width:991.98px) {
+			flex-direction: column;
+			row-gap: 20px;
+			align-items: flex-start;
+
+		}
+
+	}
+
+	&__section-header {
+		flex: 0 1 50%;
+	}
+
+	&__list {
+		display: flex;
+		flex-direction: column;
+		flex: 0 1 50%;
+	}
+}
+
+.screen-06-list {
+
+
+	&__item {
+		display: flex;
+		align-items: center;
+		@include adaptiveValue("margin-bottom", 60, 20);
+
+		&:last-child {
+			margin: 0px 0px 0px 0px;
+		}
+	}
+
+	&__icon {
+
+		img {
+			width: 60px;
+			height: 60px;
+
+			@media (max-width:$mobileSmall) {
+				width: 40px;
+				height: 40px;
+			}
+		}
+	}
+
+	&__title {
+		color: $darkColor;
+		font-weight: 700;
+		@include adaptiveValue("margin-bottom", 32, 10);
+		line-height: math.div(38, 30);
+	}
+
+	&__subtitle {
+		line-height: math.div(45, 25);
+	}
+
+	&__content {
+		@include adaptiveValue("margin-left", 50, 15);
+	}
+}
+
+
+.screen-07 {
+
+	display: flex;
+
+	@media (max-width:767.98px) {
+		flex-direction: column;
+	}
+
+	&__container {
+		flex: 0 1 70%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+
+	&__content {
+		.screen-06-list {
+			flex: 0 1 50%;
+
+			@media (max-width:767.98px) {
+				padding-top: rem(30);
+			}
+		}
+	}
+
+	&__img {
+		flex: 0 1 30%;
+
+		@media (max-width:767.98px) {
+			height: 35%;
+		}
+
+		img {
+			object-fit: cover;
+			width: 100%;
+			height: 100%;
+		}
+	}
+}
+
+
+.screen-08 {
+	display: flex;
+
+	@media (max-width:767.98px) {
+		flex-direction: column-reverse;
+	}
+
+	&__container {
+		flex: 0 1 75%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	&__content {}
+
+	&__section-header {}
+
+	&__statistic {}
+
+	&__img {
+		@media (max-width:767.98px) {
+			height: 60%;
+		}
+
+		@media (max-width:$mobileSmall) {
+			height: 40%;
+		}
+
+		img {
+			object-fit: cover;
+			width: 100%;
+			height: 100%;
+		}
+	}
+}
+
+.statistic {
+	display: flex;
+	@include adaptiveValue("margin-top", 180, 30);
+	justify-content: space-between;
+	column-gap: 15px;
+
+	&__item {
+		h4 {
+			font-weight: 700;
+			line-height: math.div(75, 60);
+			@include adaptiveValue("font-size", 60, 25);
+			color: $darkColor;
+		}
+
+		span {
+			line-height: math.div(31, 25);
+			@include adaptiveValue("font-size", 25, 16);
+		}
+	}
+}
+
+.screen-09 {
+	display: flex;
+	flex-direction: row-reverse;
+
+	@media (max-width:767.98px) {
+		flex-direction: column;
+	}
+
+	&__logo {
+		flex: 0 1 25%;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+
+		@media (min-width:767.98px) {
+			writing-mode: vertical-rl;
+			display: block;
+		}
+	}
+
+	&__container {
+		flex: 0 1 75%;
+		display: flex;
+	}
+
+	&__content {
+		display: flex;
+		flex: 0 1 100%;
+
+	}
+
+	&__products {
+		display: flex;
+		flex: 0 1 100%;
+		flex-direction: column;
+	}
+}
+
+.screen-09-logo {
+	text-align: center;
+
+	@media (min-width:767.98px) {
+		writing-mode: vertical-rl;
+		transform: rotate(-180deg);
+	}
+
+	p {
+		@include adaptiveValue("font-size", 25, 16);
+		line-height: math.div(31, 25);
+	}
+
+	h2 {
+		font-weight: 700;
+		line-height: math.div(75, 60);
+		@include adaptiveValue("font-size", 60, 30);
+		color: $darkColor;
+	}
+}
+
+.products {
+
+	&__item {
+		flex: 0 1 50%;
+		display: flex;
+		align-items: center;
+
+		@media (min-width:767.98px) {
+			&:nth-child(even) {
+				flex-direction: row-reverse;
+				text-align: left;
+			}
+
+			&:nth-child(odd) {
+				text-align: right;
+
+				.products__text {
+					margin-left: auto;
+				}
+			}
+		}
+
+		@media (max-width:767.98px) {
+			column-gap: 15px;
+		}
+
+		@media (max-width:$mobileSmall) {
+			flex-direction: column;
+			margin-bottom: rem(20);
+
+			&:last-child {
+				margin: 0px 0px 0px 0px;
+			}
+		}
+	}
+
+	&__img {
+		flex: 0 1 50%;
+		height: 100%;
+		position: relative;
+
+		img {
+			object-fit: cover;
+			width: 100%;
+			height: 100%;
+			left: 0;
+			top: 0;
+			position: absolute;
+		}
+
+		@media (max-width:$mobileSmall) {
+			width: 100%;
+			min-height: 200px;
+			margin-bottom: 10px;
+		}
+	}
+
+	&__content {
+		flex: 0 1 50%;
+
+
+	}
+
+	&__title {
+		font-weight: 700;
+		@include adaptiveValue("margin-bottom", 32, 15);
+		line-height: math.div(38, 30);
+		@include adaptiveValue("font-size", 30, 25);
+		color: #1C1F25;
+	}
+
+	&__text {
+		max-width: 420px;
+		@include adaptiveValue("font-size", 25, 20);
+		line-height: math.div(45, 25);
+	}
+}
+
+
+.screen-10 {
+	@media (max-width:991.98px) {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+
+	&__container {
+		display: flex;
+		height: 100%;
+
+		@media (max-width:991.98px) {
+			padding-top: rem(40);
+			padding-bottom: rem(40);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 100%;
+		}
+	}
+
+	&__items {
+		display: flex;
+		width: 100%;
+
+		@media (max-width:991.98px) {
+			flex-direction: column;
+			height: 100%;
+		}
+	}
+
+	&__item {
+		flex: 0 1 33.3%;
+	}
+}
+
+.screen-10-item {
+	display: flex;
+	flex-direction: column;
+
+
+	@media (max-width:991.98px) {
+		flex-direction: row;
+		margin-bottom: 20px;
+
+		&:last-child {
+			margin: 0px 0px 0px 0px;
+		}
+	}
+
+	&__img {
+		@include adaptiveValue("margin-bottom", 60, 30);
+		position: relative;
+		min-height: 65%;
+
+		img {
+			width: 100%;
+			object-fit: cover;
+			height: 100%;
+			position: absolute;
+			left: 0;
+			top: 0;
+
+		}
+
+		@media (max-width:991.98px) {
+			min-height: 100%;
+			height: auto;
+			width: 100%;
+			margin-bottom: 0;
+			margin-right: 15px;
+		}
+	}
+
+	&__title {
+		font-weight: 700;
+		@include adaptiveValue("font-size", 30, 25);
+		line-height: math.div(38, 30);
+		color: $darkColor;
+		@include adaptiveValue("margin-bottom", 25, 15);
+
+	}
+
+	&__subtitle {
+		max-width: 430px;
+		@include adaptiveValue("font-size", 25, 20);
+		line-height: math.div(45, 25);
+	}
+}
+
+
+.screen-11 {
+	display: flex;
+
+	@media (min-width:991.98px) {
+		justify-content: center;
+		align-items: center;
+		position: relative;
+
+	}
+
+	&::after {
+		content: '';
+		position: absolute;
+		width: 40%;
+		height: 100%;
+		left: 0;
+		top: 0;
+		background: rgba(196, 196, 196, 0.3);
+		z-index: -1;
+	}
+
+	&__container {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+
+		@media (max-width:991.98px) {
+			flex-direction: column;
+			width: 100%;
+			padding-top: rem(40);
+			padding-bottom: rem(30);
+		}
+	}
+
+	&__img {
+
+		flex: 0 1 720px;
+
+
+		img {
+			max-width: 100%;
+			object-fit: cover;
+		}
+
+		@media (max-width:1400.98px) {
+			flex: 0 1 500px;
+
+		}
+
+		@media (max-width:991.98px) {
+			position: relative;
+			width: 100%;
+			margin-bottom: 15px;
+			flex: 0 1 40%;
+
+			img {
+				position: absolute;
+				width: 100%;
+				height: 100%;
+				left: 0;
+				top: 0;
+			}
+		}
+	}
+
+	&__projects {
+		display: flex;
+		flex-direction: column;
+		row-gap: 20px;
+		flex: 0 1 430px;
+		margin-left: 20px;
+
+		@media (min-width:1400.98px) {
+			@include adaptiveValue("margin-left", 200, 0);
+
+		}
+
+		@media (max-width:991.98px) {
+			width: 100%;
+			flex: 0 1 60%;
+
+		}
+	}
+
+	&__project {}
+}
+
+.screen-11-project {
+
+	&__title {
+		@extend .screen-10-item__title;
+	}
+
+	&__text {
+		@extend .screen-10-item__subtitle;
+
+	}
+}
+
+
+.screen-12 {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	@media (max-width:767.98px) {
+		background-color: #000;
+	}
+
+	&__container {
+		display: flex;
+		width: 100%;
+	}
+
+	&__content {
+		position: relative;
+		display: flex;
+		width: 100%;
+		justify-content: center;
+	}
+
+	&__img {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		left: 0;
+		top: 0;
+
+		img {
+			max-width: 100%;
+			object-fit: cover;
+			position: absolute;
+			width: 100%;
+			height: 100%;
+			left: 0;
+			top: 0;
+		}
+
+		&::after {
+			content: '';
+			position: absolute;
+			width: 100%;
+			height: 100%;
+			left: 0;
+			top: 0;
+			background: rgba(28, 31, 37, 0.5);
+		}
+	}
+
+	&__statistic {
+		position: relative;
+		z-index: 2;
+	}
+}
+
+.screen-12-statistic {
+	display: flex;
+	justify-content: space-between;
+	width: 100%;
+	@include adaptiveValue("padding-top", math.div($containerPadding, 2), 15);
+	@include adaptiveValue("padding-bottom", math.div($containerPadding, 2), 15);
+	@include adaptiveValue("padding-left", math.div($containerPadding, 2), 15);
+	@include adaptiveValue("padding-right", math.div($containerPadding, 2), 15);
+
+	&__item {
+		color: #E3E6EC;
+		flex: 0 1 210px;
+		text-align: center;
+
+		div {
+			font-weight: 700;
+			@include adaptiveValue("font-size", 60, 35);
+			line-height: math.div(75, 60);
+			margin-bottom: 5px;
+		}
+
+		p {
+			font-size: 25px;
+			line-height: math.div(31, 25);
+		}
+	}
+
+	@media (max-width:767.98px) {
+		flex-direction: column;
+
+		&__item {
+			flex: 0 1 33.3%;
+			margin-bottom: rem(30);
+
+			&:last-child {
+				margin: 0px 0px 0px 0px;
+			}
+		}
+	}
+}

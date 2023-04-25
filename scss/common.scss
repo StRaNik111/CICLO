@@ -1,0 +1,77 @@
+.section-header {
+
+	&__label {
+		line-height: math.div(31, 25);
+		color: #6A6E77;
+
+		// transform: translate(0px, rem(80));
+		opacity: 0;
+		transition: all 0.8s;
+
+		@include adaptiveValue("margin-bottom", 32, 16);
+
+		.previous-section & {
+			transform: translate(0px, rem(-100));
+
+		}
+
+		.next-section & {
+			transform: translate(0px, rem(100));
+
+		}
+
+		.active-section & {
+			transform: translate(0px, 0px);
+			opacity: 1;
+		}
+	}
+
+	&__title {
+		opacity: 0;
+		transform: translate(0px, rem(100));
+		transition: all 1s;
+		line-height: math.div(75, 60);
+		font-weight: 700;
+		@include adaptiveValue("font-size", 60, 35);
+		color: $darkColor;
+		max-width: 470px;
+
+		&--big {
+			max-width: rem(890);
+		}
+
+		.previous-section & {
+			transform: translate(0px, rem(-100));
+
+		}
+
+		.next-section & {
+			transform: translate(0px, rem(100));
+
+		}
+
+		.active-section & {
+
+			transform: translate(0px, 0px);
+			opacity: 1;
+		}
+	}
+
+	&__text {
+		max-width: rem(540);
+		line-height: math.div(45, 25);
+		@include adaptiveValue("font-size", 25, 16);
+	}
+
+	&--lite {
+		.section-header__label {
+			color: #E3E6EC;
+		}
+
+		.section-header__title {
+			color: #FFFFFF;
+		}
+	}
+}
+
+// Заголовки, загальні БЕМ блоки та інше...
